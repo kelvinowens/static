@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, Play, ShoppingCart, Mail, Home, Music, BookOpen, Store } from 'lucide-react';
+import { Container, Row, Col, Card, Button, Form, Nav, Navbar, Badge, Alert } from 'react-bootstrap';
 
 export default function ArtistWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -40,239 +41,265 @@ export default function ArtistWebsite() {
   };
 
   const renderHome = () => (
-    <div className="space-y-16">
+    <div>
       {/* Hero Section */}
-      <div className="min-h-screen flex flex-col justify-center items-center text-center py-20 px-4 bg-gradient-to-b from-slate-900 via-slate-950 to-black">
-        <div className="mb-8 text-6xl">🎸</div>
-        <h1 className="text-5xl md:text-7xl font-bold mb-4 text-white">Static the Gremlin</h1>
-        <p className="text-xl md:text-2xl text-gray-400 mb-8">Breaking Benjamin meets Linkin Park. Nu Metal. Alternative Rock. Raw. Unfiltered.</p>
-        <button
-          onClick={() => setCurrentPage('music')}
-          className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition"
-        >
-          Explore Music
-        </button>
+      <div className="bg-dark text-white py-5 text-center" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Container>
+          <div className="mb-4" style={{ fontSize: '4rem' }}>🎸</div>
+          <h1 className="display-3 fw-bold mb-4">Static the Gremlin</h1>
+          <p className="lead text-secondary mb-4">Breaking Benjamin meets Linkin Park. Nu Metal. Alternative Rock. Raw. Unfiltered.</p>
+          <Button 
+            variant="danger" 
+            size="lg"
+            onClick={() => setCurrentPage('music')}
+            className="px-5"
+          >
+            Explore Music
+          </Button>
+        </Container>
       </div>
 
       {/* Featured Tracks */}
-      <div className="px-4 md:px-8">
-        <h2 className="text-3xl font-bold mb-8 text-white">Featured Tracks</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <Container className="py-5">
+        <h2 className="display-5 fw-bold mb-5 text-white">Featured Tracks</h2>
+        <Row className="g-4">
           {songs.slice(0, 3).map(song => (
-            <div key={song.id} className="bg-slate-800 rounded-lg p-6 hover:bg-slate-700 transition cursor-pointer border border-slate-700">
-              <div className="text-4xl mb-4">{song.cover}</div>
-              <h3 className="text-xl font-bold text-white mb-2">{song.title}</h3>
-              <p className="text-gray-400 mb-4">{song.genre}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">{song.plays} plays</span>
-                <Play size={20} className="text-red-600" />
-              </div>
-            </div>
+            <Col key={song.id} md={4}>
+              <Card className="bg-dark border-secondary text-white h-100 hover-shadow" style={{ cursor: 'pointer', transition: 'all 0.3s' }}>
+                <Card.Body>
+                  <div className="mb-3" style={{ fontSize: '3rem' }}>{song.cover}</div>
+                  <Card.Title className="fs-5">{song.title}</Card.Title>
+                  <Badge bg="danger" className="mb-3">{song.genre}</Badge>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <small className="text-secondary">{song.plays} plays</small>
+                    <Play size={20} className="text-danger" />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
           ))}
-        </div>
-      </div>
+        </Row>
+      </Container>
 
       {/* Newsletter */}
-      <div className="px-4 md:px-8 py-12 bg-slate-900 rounded-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-white mb-4">Stay Updated</h2>
-        <form onSubmit={handleNewsletter} className="flex gap-4">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="flex-1 px-4 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-600"
-          />
-          <button type="submit" className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition">
-            Subscribe
-          </button>
-        </form>
-      </div>
+      <Container className="py-5">
+        <div className="bg-dark border border-secondary rounded p-5">
+          <h3 className="text-white mb-4">Stay Updated</h3>
+          <Form onSubmit={handleNewsletter}>
+            <Row className="g-2">
+              <Col md={8}>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-secondary text-white border-0"
+                />
+              </Col>
+              <Col md={4}>
+                <Button variant="danger" type="submit" className="w-100">
+                  Subscribe
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+      </Container>
     </div>
   );
 
   const renderMusic = () => (
-    <div className="px-4 md:px-8 py-8">
-      <h1 className="text-4xl font-bold mb-12 text-white">Music Collection</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <Container className="py-5">
+      <h1 className="display-4 fw-bold mb-5 text-white">Music Collection</h1>
+      <Row className="g-4">
         {songs.map(song => (
-          <div key={song.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-red-600 transition">
-            <div className="flex items-start justify-between mb-4">
-              <div className="text-5xl">{song.cover}</div>
-              <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">{song.genre}</span>
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">{song.title}</h3>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-gray-400">{song.plays} plays</span>
-              <div className="flex gap-2">
-                <button className="p-2 bg-red-600 hover:bg-red-700 rounded text-white transition">
-                  <Play size={20} />
-                </button>
-                <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded text-white transition">
-                  Download
-                </button>
-              </div>
-            </div>
-          </div>
+          <Col key={song.id} md={6} lg={6}>
+            <Card className="bg-dark border-secondary text-white h-100">
+              <Card.Body>
+                <Row className="mb-3">
+                  <Col xs={6}>
+                    <div style={{ fontSize: '4rem' }}>{song.cover}</div>
+                  </Col>
+                  <Col xs={6} className="text-end">
+                    <Badge bg="danger" className="mb-2">{song.genre}</Badge>
+                  </Col>
+                </Row>
+                <Card.Title className="fs-4">{song.title}</Card.Title>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <small className="text-secondary">{song.plays} plays</small>
+                </div>
+                <div className="d-flex gap-2">
+                  <Button variant="danger" size="sm" className="flex-grow-1">
+                    <Play size={18} /> Play
+                  </Button>
+                  <Button variant="outline-secondary" size="sm" className="flex-grow-1">
+                    Download
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 
   const renderBlog = () => (
-    <div className="px-4 md:px-8 py-8">
-      <h1 className="text-4xl font-bold mb-12 text-white">Blog & Insights</h1>
-      <div className="space-y-6">
+    <Container className="py-5">
+      <h1 className="display-4 fw-bold mb-5 text-white">Blog & Insights</h1>
+      <div className="space-y-4">
         {blogPosts.map(post => (
-          <div key={post.id} className="bg-slate-800 rounded-lg p-8 border border-slate-700 hover:border-red-600 transition cursor-pointer">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">{post.title}</h2>
-                <p className="text-gray-400 text-sm">{post.date}</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-4">{post.excerpt}</p>
-            <button className="text-red-600 hover:text-red-400 font-bold transition">Read More →</button>
-          </div>
+          <Card key={post.id} className="bg-dark border-secondary text-white mb-4">
+            <Card.Body>
+              <Card.Title className="fs-4">{post.title}</Card.Title>
+              <Card.Subtitle className="mb-3 text-secondary">{post.date}</Card.Subtitle>
+              <Card.Text>{post.excerpt}</Card.Text>
+              <Button variant="link" className="text-danger p-0">
+                Read More →
+              </Button>
+            </Card.Body>
+          </Card>
         ))}
       </div>
-    </div>
+    </Container>
   );
 
   const renderStore = () => (
-    <div className="px-4 md:px-8 py-8">
-      <h1 className="text-4xl font-bold mb-12 text-white">Merchandise Store</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <Container className="py-5">
+      <h1 className="display-4 fw-bold mb-5 text-white">Merchandise Store</h1>
+      <Row className="g-4 mb-4">
         {merchandise.map(item => (
-          <div key={item.id} className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-red-600 transition">
-            <div className="text-5xl mb-4">📦</div>
-            <h3 className="text-xl font-bold text-white mb-2">{item.name}</h3>
-            <p className="text-gray-400 mb-4">{item.desc}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold text-red-600">${item.price}</span>
-              <button
-                onClick={addToCart}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition flex items-center gap-2"
-              >
-                <ShoppingCart size={18} /> Add
-              </button>
-            </div>
-          </div>
+          <Col key={item.id} md={6} lg={6}>
+            <Card className="bg-dark border-secondary text-white h-100">
+              <Card.Body>
+                <div className="mb-3" style={{ fontSize: '3rem' }}>📦</div>
+                <Card.Title className="fs-5">{item.name}</Card.Title>
+                <Card.Text className="text-secondary mb-3">{item.desc}</Card.Text>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="fs-5 fw-bold text-danger">${item.price}</span>
+                  <Button 
+                    variant="danger" 
+                    size="sm"
+                    onClick={addToCart}
+                    className="d-flex align-items-center gap-2"
+                  >
+                    <ShoppingCart size={18} /> Add
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </div>
+      </Row>
       {cartCount > 0 && (
-        <div className="bg-green-900 border border-green-600 rounded-lg p-6 text-center">
-          <p className="text-white text-lg">Items in cart: <span className="font-bold text-2xl text-green-400">{cartCount}</span></p>
-        </div>
+        <Alert variant="success" className="text-center">
+          <h5 className="mb-0">Items in cart: <span className="fw-bold">{cartCount}</span></h5>
+        </Alert>
       )}
-    </div>
+    </Container>
   );
 
   const renderContact = () => (
-    <div className="px-4 md:px-8 py-8 max-w-2xl mx-auto">
-      <h1 className="text-4xl font-bold mb-12 text-white">Get In Touch</h1>
-      <form className="space-y-6 bg-slate-800 rounded-lg p-8 border border-slate-700">
-        <div>
-          <label className="block text-white font-bold mb-2">Name</label>
-          <input type="text" className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-600" placeholder="Your name" />
-        </div>
-        <div>
-          <label className="block text-white font-bold mb-2">Email</label>
-          <input type="email" className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-600" placeholder="your@email.com" />
-        </div>
-        <div>
-          <label className="block text-white font-bold mb-2">Message</label>
-          <textarea className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-600 h-32" placeholder="Your message..."></textarea>
-        </div>
-        <button type="submit" className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition">
-          Send Message
-        </button>
-      </form>
-    </div>
+    <Container className="py-5">
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <h1 className="display-4 fw-bold mb-5 text-white">Get In Touch</h1>
+          <Card className="bg-dark border-secondary text-white">
+            <Card.Body>
+              <Form>
+                <Form.Group className="mb-4">
+                  <Form.Label className="text-white fw-bold">Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Your name"
+                    className="bg-secondary text-white border-0"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Label className="text-white fw-bold">Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="your@email.com"
+                    className="bg-secondary text-white border-0"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Label className="text-white fw-bold">Message</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={6}
+                    placeholder="Your message..."
+                    className="bg-secondary text-white border-0"
+                  />
+                </Form.Group>
+
+                <Button variant="danger" type="submit" className="w-100 fw-bold">
+                  Send Message
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="bg-dark" style={{ minHeight: '100vh' }}>
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-slate-950 border-b border-slate-800 z-50">
-        <div className="px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-red-600">🎸 Static the Gremlin</div>
-          
-          {/* Desktop Menu */}
-          <div className="hidden md:flex gap-8">
-            {[
-              { label: 'Home', page: 'home', icon: Home },
-              { label: 'Music', page: 'music', icon: Music },
-              { label: 'Blog', page: 'blog', icon: BookOpen },
-              { label: 'Store', page: 'store', icon: Store },
-              { label: 'Contact', page: 'contact', icon: Mail },
-            ].map(item => (
-              <button
-                key={item.page}
-                onClick={() => setCurrentPage(item.page)}
-                className={`flex items-center gap-2 font-bold transition ${
-                  currentPage === item.page
-                    ? 'text-red-600'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <item.icon size={18} />
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Cart & Mobile Menu */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <ShoppingCart size={24} className="cursor-pointer hover:text-red-600 transition" />
+      <Navbar bg="dark" expand="md" sticky="top" className="border-bottom border-secondary">
+        <Container>
+          <Navbar.Brand className="text-danger fw-bold fs-5">
+            🎸 Static the Gremlin
+          </Navbar.Brand>
+          <Navbar.Toggle 
+            aria-controls="basic-navbar-nav"
+            className="border-danger"
+          />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto gap-4">
+              {[
+                { label: 'Home', page: 'home' },
+                { label: 'Music', page: 'music' },
+                { label: 'Blog', page: 'blog' },
+                { label: 'Store', page: 'store' },
+                { label: 'Contact', page: 'contact' },
+              ].map(item => (
+                <Nav.Link
+                  key={item.page}
+                  onClick={() => setCurrentPage(item.page)}
+                  className={`fw-bold ${
+                    currentPage === item.page
+                      ? 'text-danger'
+                      : 'text-secondary'
+                  }`}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {item.label}
+                </Nav.Link>
+              ))}
+            </Nav>
+            <div className="ms-3 position-relative">
+              <ShoppingCart 
+                size={24} 
+                className="text-secondary cursor-pointer"
+                style={{ cursor: 'pointer' }}
+              />
               {cartCount > 0 && (
-                <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle">
                   {cartCount}
-                </div>
+                </Badge>
               )}
             </div>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white hover:text-red-600 transition"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-900 border-t border-slate-800 px-4 py-4 space-y-4">
-            {[
-              { label: 'Home', page: 'home' },
-              { label: 'Music', page: 'music' },
-              { label: 'Blog', page: 'blog' },
-              { label: 'Store', page: 'store' },
-              { label: 'Contact', page: 'contact' },
-            ].map(item => (
-              <button
-                key={item.page}
-                onClick={() => {
-                  setCurrentPage(item.page);
-                  setMobileMenuOpen(false);
-                }}
-                className={`block w-full text-left font-bold transition ${
-                  currentPage === item.page
-                    ? 'text-red-600'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
       {/* Content */}
-      <div className="pt-20">
+      <div className="bg-dark text-white py-5">
         {currentPage === 'home' && renderHome()}
         {currentPage === 'music' && renderMusic()}
         {currentPage === 'blog' && renderBlog()}
@@ -281,38 +308,37 @@ export default function ArtistWebsite() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 mt-20 px-4 md:px-8 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-red-600 mb-4">Music</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Streaming</a></li>
-                <li><a href="#" className="hover:text-white transition">Downloads</a></li>
-                <li><a href="#" className="hover:text-white transition">Lyrics</a></li>
+      <footer className="border-top border-secondary bg-dark text-white py-5 mt-5">
+        <Container>
+          <Row className="mb-4">
+            <Col md={4} className="mb-4">
+              <h5 className="text-danger fw-bold">Music</h5>
+              <ul className="list-unstyled">
+                <li><a href="#" className="text-secondary text-decoration-none">Streaming</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Downloads</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Lyrics</a></li>
               </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-red-600 mb-4">Community</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Discord</a></li>
-                <li><a href="#" className="hover:text-white transition">Fan Forum</a></li>
-                <li><a href="#" className="hover:text-white transition">Newsletter</a></li>
+            </Col>
+            <Col md={4} className="mb-4">
+              <h5 className="text-danger fw-bold">Community</h5>
+              <ul className="list-unstyled">
+                <li><a href="#" className="text-secondary text-decoration-none">Discord</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Fan Forum</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Newsletter</a></li>
               </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-red-600 mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition">Terms</a></li>
-                <li><a href="#" className="hover:text-white transition">Contact</a></li>
+            </Col>
+            <Col md={4} className="mb-4">
+              <h5 className="text-danger fw-bold">Legal</h5>
+              <ul className="list-unstyled">
+                <li><a href="#" className="text-secondary text-decoration-none">Privacy</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Terms</a></li>
+                <li><a href="#" className="text-secondary text-decoration-none">Contact</a></li>
               </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-700 pt-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2026 Static the Gremlin. All rights reserved.</p>
-          </div>
-        </div>
+            </Col>
+          </Row>
+          <hr className="border-secondary" />
+          <p className="text-center text-secondary small">&copy; 2026 Static the Gremlin. All rights reserved.</p>
+        </Container>
       </footer>
     </div>
   );
