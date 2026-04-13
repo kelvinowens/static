@@ -6,6 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import 'bootswatch/dist/darkly/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
