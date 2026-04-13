@@ -44,7 +44,7 @@ export default function ArtistWebsite() {
       {/* Hero Section */}
       <div className="min-h-screen flex flex-col justify-center items-center text-center py-20 px-4 bg-gradient-to-b from-slate-900 via-slate-950 to-black">
         <div className="mb-8 text-6xl">🎸</div>
-        <h1 className="text-5xl md:text-7xl font-bold mb-4 text-white">Dark Resonance</h1>
+        <h1 className="text-5xl md:text-7xl font-bold mb-4 text-white">Static the Gremlin</h1>
         <p className="text-xl md:text-2xl text-gray-400 mb-8">Breaking Benjamin meets Linkin Park. Nu Metal. Alternative Rock. Raw. Unfiltered.</p>
         <button
           onClick={() => setCurrentPage('music')}
@@ -197,7 +197,7 @@ export default function ArtistWebsite() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-slate-950 border-b border-slate-800 z-50">
         <div className="px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-red-600">🎸 Dark Resonance</div>
+          <div className="text-2xl font-bold text-red-600">🎸 Static the Gremlin</div>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex gap-8">
@@ -310,7 +310,7 @@ export default function ArtistWebsite() {
             </div>
           </div>
           <div className="border-t border-slate-700 pt-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2026 Dark Resonance. All rights reserved.</p>
+            <p>&copy; 2026 Static the Gremlin. All rights reserved.</p>
           </div>
         </div>
       </footer>
