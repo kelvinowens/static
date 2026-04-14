@@ -1,34 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X, Play, ShoppingCart, Mail, Home, Music, BookOpen, Store } from 'lucide-react';
 import { Container, Row, Col, Card, Button, Form, Nav, Navbar, Badge, Alert } from 'react-bootstrap';
+import AdminDashboard from './AdminDashboard';
+
+const API_URL = 'http://localhost:5000/api';
 
 export default function ArtistWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [email, setEmail] = useState('');
+  
+  // Data states
+  const [songs, setSongs] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [merchandise, setMerchandise] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const songs = [
-    { id: 1, title: 'Chains Don\'t Hold', genre: 'Alternative Rock', plays: 1240, cover: '🎸' },
-    { id: 2, title: 'Hollow', genre: 'Hard Rock', plays: 980, cover: '🎸' },
-    { id: 3, title: 'Roll the Dice', genre: 'Nu Metal', plays: 1520, cover: '🎲' },
-    { id: 4, title: 'Neon Wasteland', genre: 'Synthwave', plays: 856, cover: '🌆' },
-    { id: 5, title: 'Fallen Gods', genre: 'Alternative Metal', plays: 1100, cover: '⚡' },
-    { id: 6, title: 'Fractured', genre: 'Nu Metal', plays: 743, cover: '🔗' },
-  ];
+  // Fetch all data from API
+  useEffect(() => {
+    fetchAllData();
+    
+    // Keyboard shortcut: Ctrl+Shift+A to access admin
+    const handleKeyPress = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        setCurrentPage('admin');
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
-  const blogPosts = [
-    { id: 1, title: 'Creating Dark Rock in the Age of AI', date: '2026-04-10', excerpt: 'Exploring the process of using Suno AI for authentic metal music creation...' },
-    { id: 2, title: '3D Printing Custom Dice for Tabletop Gaming', date: '2026-04-05', excerpt: 'A deep dive into designing and printing polyhedral dice sets with specialty filaments...' },
-    { id: 3, title: 'Quantum Physics and Metal Music: A Strange Connection', date: '2026-03-28', excerpt: 'How complex scientific concepts inspire darker, more intricate songwriting...' },
-  ];
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      const [songsRes, blogRes, merchRes] = await Promise.all([
+        fetch(`${API_URL}/songs`),
+        fetch(`${API_URL}/blog`),
+        fetch(`${API_URL}/merchandise`),
+      ]);
 
-  const merchandise = [
-    { id: 1, name: 'Album Vinyl', price: 25.99, desc: 'Full album on vinyl with heavy artwork' },
-    { id: 2, name: 'Band T-Shirt', price: 19.99, desc: 'Premium quality dark metal aesthetic' },
-    { id: 3, name: 'Polyhedral Dice Set', price: 34.99, desc: 'Custom 3D-printed gaming dice' },
-    { id: 4, name: 'Digital Album Bundle', price: 9.99, desc: 'All songs in lossless audio format' },
-  ];
+      if (!songsRes.ok || !blogRes.ok || !merchRes.ok) {
+        throw new Error('Failed to load data from API');
+      }
+
+      const songsData = await songsRes.json();
+      const blogData = await blogRes.json();
+      const merchData = await merchRes.json();
+
+      setSongs(songsData);
+      setBlogPosts(blogData);
+      setMerchandise(merchData);
+      setError('');
+    } catch (err) {
+      setError('Unable to connect to API. Make sure the backend is running on http://localhost:5000');
+      console.error('API Error:', err);
+      // Use empty arrays as fallback
+      setSongs([]);
+      setBlogPosts([]);
+      setMerchandise([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addToCart = () => {
     setCartCount(cartCount + 1);
@@ -56,29 +91,40 @@ export default function ArtistWebsite() {
           >
             Explore Music
           </Button>
+          {error && (
+            <Alert variant="warning" className="mt-4">
+              ⚠️ {error}
+            </Alert>
+          )}
         </Container>
       </div>
 
       {/* Featured Tracks */}
       <Container className="py-5">
         <h2 className="display-5 fw-bold mb-5 text-white">Featured Tracks</h2>
-        <Row className="g-4">
-          {songs.slice(0, 3).map(song => (
-            <Col key={song.id} md={4}>
-              <Card className="bg-dark border-secondary text-white h-100 hover-shadow" style={{ cursor: 'pointer', transition: 'all 0.3s' }}>
-                <Card.Body>
-                  <div className="mb-3" style={{ fontSize: '3rem' }}>{song.cover}</div>
-                  <Card.Title className="fs-5">{song.title}</Card.Title>
-                  <Badge bg="danger" className="mb-3">{song.genre}</Badge>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <small className="text-secondary">{song.plays} plays</small>
-                    <Play size={20} className="text-danger" />
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+        {loading ? (
+          <div className="text-center text-secondary">Loading tracks...</div>
+        ) : songs.length > 0 ? (
+          <Row className="g-4">
+            {songs.slice(0, 3).map(song => (
+              <Col key={song._id} md={4}>
+                <Card className="bg-dark border-secondary text-white h-100 hover-shadow" style={{ cursor: 'pointer', transition: 'all 0.3s' }}>
+                  <Card.Body>
+                    <div className="mb-3" style={{ fontSize: '3rem' }}>{song.cover}</div>
+                    <Card.Title className="fs-5">{song.title}</Card.Title>
+                    <Badge bg="danger" className="mb-3">{song.genre}</Badge>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <small className="text-secondary">{song.plays} plays</small>
+                      <Play size={20} className="text-danger" />
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : (
+          <div className="text-center text-secondary">No tracks available yet</div>
+        )}
       </Container>
 
       {/* Newsletter */}
@@ -112,90 +158,110 @@ export default function ArtistWebsite() {
   const renderMusic = () => (
     <Container className="py-5">
       <h1 className="display-4 fw-bold mb-5 text-white">Music Collection</h1>
-      <Row className="g-4">
-        {songs.map(song => (
-          <Col key={song.id} md={6} lg={6}>
-            <Card className="bg-dark border-secondary text-white h-100">
-              <Card.Body>
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <div style={{ fontSize: '4rem' }}>{song.cover}</div>
-                  </Col>
-                  <Col xs={6} className="text-end">
-                    <Badge bg="danger" className="mb-2">{song.genre}</Badge>
-                  </Col>
-                </Row>
-                <Card.Title className="fs-4">{song.title}</Card.Title>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <small className="text-secondary">{song.plays} plays</small>
-                </div>
-                <div className="d-flex gap-2">
-                  <Button variant="danger" size="sm" className="flex-grow-1">
-                    <Play size={18} /> Play
-                  </Button>
-                  <Button variant="outline-secondary" size="sm" className="flex-grow-1">
-                    Download
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      {loading ? (
+        <div className="text-center text-secondary">Loading music...</div>
+      ) : songs.length > 0 ? (
+        <Row className="g-4">
+          {songs.map(song => (
+            <Col key={song._id} md={6} lg={6}>
+              <Card className="bg-dark border-secondary text-white h-100">
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col xs={6}>
+                      <div style={{ fontSize: '4rem' }}>{song.cover}</div>
+                    </Col>
+                    <Col xs={6} className="text-end">
+                      <Badge bg="danger" className="mb-2">{song.genre}</Badge>
+                    </Col>
+                  </Row>
+                  <Card.Title className="fs-4">{song.title}</Card.Title>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <small className="text-secondary">{song.plays} plays</small>
+                  </div>
+                  <div className="d-flex gap-2">
+                    <Button variant="danger" size="sm" className="flex-grow-1">
+                      <Play size={18} /> Play
+                    </Button>
+                    <Button variant="outline-secondary" size="sm" className="flex-grow-1">
+                      Download
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        <div className="text-center text-secondary">No tracks available yet. Use the admin panel to add songs!</div>
+      )}
     </Container>
   );
 
   const renderBlog = () => (
     <Container className="py-5">
       <h1 className="display-4 fw-bold mb-5 text-white">Blog & Insights</h1>
-      <div className="space-y-4">
-        {blogPosts.map(post => (
-          <Card key={post.id} className="bg-dark border-secondary text-white mb-4">
-            <Card.Body>
-              <Card.Title className="fs-4">{post.title}</Card.Title>
-              <Card.Subtitle className="mb-3 text-secondary">{post.date}</Card.Subtitle>
-              <Card.Text>{post.excerpt}</Card.Text>
-              <Button variant="link" className="text-danger p-0">
-                Read More →
-              </Button>
-            </Card.Body>
-          </Card>
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-center text-secondary">Loading blog posts...</div>
+      ) : blogPosts.length > 0 ? (
+        <div className="space-y-4">
+          {blogPosts.map(post => (
+            <Card key={post._id} className="bg-dark border-secondary text-white mb-4">
+              <Card.Body>
+                <Card.Title className="fs-4">{post.title}</Card.Title>
+                <Card.Subtitle className="mb-3 text-secondary">{post.date}</Card.Subtitle>
+                <Card.Text>{post.excerpt}</Card.Text>
+                <Button variant="link" className="text-danger p-0">
+                  Read More →
+                </Button>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-secondary">No blog posts available yet</div>
+      )}
     </Container>
   );
 
   const renderStore = () => (
     <Container className="py-5">
       <h1 className="display-4 fw-bold mb-5 text-white">Merchandise Store</h1>
-      <Row className="g-4 mb-4">
-        {merchandise.map(item => (
-          <Col key={item.id} md={6} lg={6}>
-            <Card className="bg-dark border-secondary text-white h-100">
-              <Card.Body>
-                <div className="mb-3" style={{ fontSize: '3rem' }}>📦</div>
-                <Card.Title className="fs-5">{item.name}</Card.Title>
-                <Card.Text className="text-secondary mb-3">{item.desc}</Card.Text>
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="fs-5 fw-bold text-danger">${item.price}</span>
-                  <Button 
-                    variant="danger" 
-                    size="sm"
-                    onClick={addToCart}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <ShoppingCart size={18} /> Add
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      {cartCount > 0 && (
-        <Alert variant="success" className="text-center">
-          <h5 className="mb-0">Items in cart: <span className="fw-bold">{cartCount}</span></h5>
-        </Alert>
+      {loading ? (
+        <div className="text-center text-secondary">Loading merchandise...</div>
+      ) : merchandise.length > 0 ? (
+        <>
+          <Row className="g-4 mb-4">
+            {merchandise.map(item => (
+              <Col key={item._id} md={6} lg={6}>
+                <Card className="bg-dark border-secondary text-white h-100">
+                  <Card.Body>
+                    <div className="mb-3" style={{ fontSize: '3rem' }}>📦</div>
+                    <Card.Title className="fs-5">{item.name}</Card.Title>
+                    <Card.Text className="text-secondary mb-3">{item.desc}</Card.Text>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="fs-5 fw-bold text-danger">${item.price.toFixed(2)}</span>
+                      <Button 
+                        variant="danger" 
+                        size="sm"
+                        onClick={addToCart}
+                        className="d-flex align-items-center gap-2"
+                      >
+                        <ShoppingCart size={18} /> Add
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+          {cartCount > 0 && (
+            <Alert variant="success" className="text-center">
+              <h5 className="mb-0">Items in cart: <span className="fw-bold">{cartCount}</span></h5>
+            </Alert>
+          )}
+        </>
+      ) : (
+        <div className="text-center text-secondary">No merchandise available yet</div>
       )}
     </Container>
   );
@@ -246,6 +312,11 @@ export default function ArtistWebsite() {
       </Row>
     </Container>
   );
+
+  // Admin section
+  if (currentPage === 'admin') {
+    return <AdminDashboard />;
+  }
 
   return (
     <div className="bg-dark" style={{ minHeight: '100vh' }}>
@@ -337,7 +408,7 @@ export default function ArtistWebsite() {
             </Col>
           </Row>
           <hr className="border-secondary" />
-          <p className="text-center text-secondary small">&copy; 2026 Static the Gremlin. All rights reserved.</p>
+          <p className="text-center text-secondary small">&copy; 2026 Static the Gremlin. All rights reserved. | Admin: Ctrl+Shift+A</p>
         </Container>
       </footer>
     </div>
